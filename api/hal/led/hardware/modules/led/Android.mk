@@ -1,0 +1,16 @@
+LOCAL_PATH:=$(call my-dir)
+
+include $(CLEAR_VARS)
+
+LOCAL_C_INCLUDE+= \
+				  hardware/modules/include/
+
+LOCAL_MODULE_TAGS:=eng
+LOCAL_PRELINK_MODULE:=false
+LOCAL_MOUDLE_PATH:=$(TARGET_OUT_SHARED_LIBRARIES)/hw
+LOCAL_SHARED_LIBRARIES:=liblog
+LOCAL_SRC_FILES:=led.c
+LOCAL_MODULE:=led.goldfish
+#LOCAL_MODULE:=led.default
+include $(BUILD_SHARED_LIBRARAY)
+
