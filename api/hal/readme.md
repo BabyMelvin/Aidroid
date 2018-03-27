@@ -103,3 +103,31 @@ static int load(const char *id,const char* path,const struct hw_module_t**pHmi){
     app可直接通过service调用.so格式的JNI。高效但是不正规
 ### (2) manager实现
     Manager调用Service：复杂，符合Android 框架
+    
+## 4.设备权限
+### (1)设置设备权限
+> Android系统启动时，内核引导参数上一般设置init=/init，**挂载** 了这个文件系统，首先运行根目录Init程序.
+
+新增驱动程序的设备节点，需要随之更改这些设备节点属性。
+``` c++
+//定义.`/system/core/init/devices.c`
+struct perms_ {
+    char*name;
+    char*attr;
+    mode_t perm;
+    unsigned int uid;
+    unsigned int gid;
+    usnsigned short prefix;
+};
+//配置 /system/core/include/private/android_filesystem_config.h
+//文件系统一些配置
+#define AID_ROOT 0
+#define AID_SYSTEM 1000
+#define AID_SHELL  2000  //adb and debug shell user
+#define AID_CACHE  2001 //chache access
+#define AID_APP    10000 // first app user
+
+
+```
+
+
