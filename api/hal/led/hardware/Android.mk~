@@ -1,1 +1,0 @@
-include $(call include-all-submakefiles)
