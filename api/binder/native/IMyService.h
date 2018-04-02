@@ -40,7 +40,9 @@ namespace android{
     //申明客户端BpMyService
     class BpMyService:public BpInterface<IMyService>{
         public:
-           BpMyService(const sp<IBinder>& impl); virtual void sayHello(); }
+           BpMyService(const sp<IBinder>& impl);
+           virtual void sayHello(); 
+    }
     //申明服务端BnMyService
     class BnMyService:public BnInterface<IMyService>{
         public:
