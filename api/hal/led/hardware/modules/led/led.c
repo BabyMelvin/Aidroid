@@ -22,14 +22,14 @@
 int led_device_open(const struct hw_module_t*,const char*,struct hw_device_t**);
 int led_device_close(struct hw_device_t*);
 
-//HAL_MODULE_INFO_SYM是一个宏定义，load是通过这个宏找到地址
+//HAL_MODULE_INFO_SYM是一个宏定义(#define HAML_MODULE_INFO) HMI)，load是通过这个宏找到地址
 const struct led_module_t HAL_MODULE_INFO_SYM={
     common:{
             tag:HARDWARE_MODULE_TAG,
             version_major:1,
             version_minor:0,
             id:LED_HARDWARE_MODULE_ID, //led.goldfish中的led?
-            author:"henggu",
+            author:"melvin",
             methods:&led_module_methods,
            },
     //这里添加支持的API
