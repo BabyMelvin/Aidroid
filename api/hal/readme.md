@@ -32,7 +32,7 @@ typedef struct hw_module_methods_t{
 } hw_module_methods_t;
 ```
 ### (1)函数`hw_get_module()`
-此函数功能:根据模块ID寻找硬件模块动态链接库的地址，然后调用load打开动态链接库,根据HAL_MODULE_INFO_SYM并获取硬件模块结构体。在hw_module_t提供结构体函数打开相应模块，并初始化。
+此函数功能:根据模块ID寻找硬件模块动态链接库的地址，然后调用load打开动态链接库,根据`HAL_MODULE_INFO_SYM`并获取硬件模块结构体。在hw_module_t提供结构体函数打开相应模块，并初始化。
 
 `open()`会传入`hw_device_t`指针，对应的模块保存在该指针里面，通过它进行交互.
 ```c
