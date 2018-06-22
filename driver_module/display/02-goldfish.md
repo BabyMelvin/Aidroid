@@ -112,3 +112,54 @@ static int goldfish_fb_probe(struct platform_device*pdev){
 #endif
 }
 ```
+上述通过FrameBuffer驱动程序实现了对RGB565颜色空间的支持，其中虚拟显示的y值是实际显示的2倍，这样就实现了双缓冲功能。
+
+## 1.2 使用Gralloc模块的驱动程序
+不同的硬件有不同的硬件图形加速设备和缓冲内存实现方法。Android Gralloc动态抽象的任务是消除不同 的设备之间的差别，在上层看来都是同样的方法和对象。在Moudle层隐藏缓冲区操作细节。Android使用了动态链接聚gralloc.xxx.so来封装底层实现细节。
+
+默认Gralloc模块的实现源码保存在`hardware/libhardware/modules/gralloc/`，Android Gralloc模块主要有如下三个实现文件:
+
+* `gralloc.cpp`：其中实现了`gralloc_module_t`模块和`alloc_device_t`设备。
+* `mapper.cpp`:其中实现了工具函数。
+* `framebuffer.cpp`:其中实现了`alloc_device_t`设备.
+
+### 1.2.1 文件gralloc.cpp
+定义函数gralloc_device_open()，模块打开函数.
+
+```c
+int gralloc_device_open(const hw_module_t*module,const char*name,hw_device_t**device){
+	int status=-EINVAL;
+	if(!strcmp(name,GRALLOC_HARDWARE_ID)){
+		gralloc_context*dev;
+		dev=(gralloc_context_t*)malloc(sizeof(*dev));
+		//初始化状态
+		memset(dev,0,sizeof(*dev));
+		//初始化procs
+		dev->device.common.tag=HARDWARE_DEVICE_TAG;
+		dev->device.common.version=0;
+		dev->device.common.module=const_cat<hw_module_t*>(module);
+		dev->common->close=gralloc_close;
+		dev->device.alloc=gralloc_alloc；
+		dev->device.free=gralloc_free;
+		status=0;
+	}else{
+		//打开framebuffer_device_t设备
+		status=fb_device_open(module,name,device);
+	}
+	return status;
+}
+```
+定义函数`gralloc_alloc_framebuffer_locked()`：
+```c
+static int gralloc_alloc_framebuffer_locked(alloc_device_t*dev,size_t size,int usage,buffer_handle_t *pHandle){
+	private module_t*m=reinterpret_cast<private_moudle_t*>(dev->common.module);
+	//分配framebuffer
+	if(m->framebuffer==NULL){
+		//initialize the framebuffer,the framebuffer is mapped once and forever
+		int err=mapFrameBufferLocked(m);
+		if(err<0){
+			return err;
+		}
+	}
+}
+```
