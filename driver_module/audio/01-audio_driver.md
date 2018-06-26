@@ -283,3 +283,81 @@ AudioFlinger::AudioFlinger()
 	}
 }
 ```
+在初始化AudioFlinger之后，会首先获得放音设备，然后为混音器(Mixer)建立线程并建立放音设备线程，最后线程中获得放音设备。
+
+在文件`AudioResample.h`中定义了类AudioResampler，此类是一个音频重取样器的工具类：
+
+```cpp
+class AudioResample{
+public:
+	enum src_quality{
+		DEFAULT = 0,   
+		LOW_QUALITY =1, //线程差值算法
+		MED_QUALITY =2, //立方差值算法
+		HIGH_QUALITY =3 //fixed multi-tap FIR 算法
+	};
+	static AudioResampler* create(int bitDepth,
+		int inChannlCount,//静态创建函数
+			int32_t sampleRate,int quality=DEFAULT);
+	virtual ~AudioResampler();
+	virtual void init()=0;
+	virtual voiod setSampleRate(int32_t inSampleRate);
+	//设置重采样率
+	virtual void setVolume(int16_t left,int16_t right);
+	//设置音量
+	virtual void resample(int32_t*out,size_t outFrameCount,
+			AudioBufferProvider*provider)=0;
+}；
+```
+通过文件AudioMixer.h和AudioMixer.cpp实现一个Audio系统混音器，它被AudioFlinger调用，一般用于在声音输出之前的处理，提供多通道处理、声音缩放、重采样。AudioMixer调用了AudioResampler。
+
+### 2.3 JNI代码
+在Android中的Audio系统中，通过JNI向java层提供功能强大的接口，这样就可以在Java层通过JNI接口完成Audio系统的大部分操作。
+
+Audio JNI的实现在 `frameworks/base/core/jni`目录下，改目录下主要有三个核心文件，具体如下：
+
+* `android.media.AudioSystem`:负责Audio系统的总体控制。
+* `android.media.AudioTrack`：负责Audio系统的输出环节。
+* `android.media.AudioRecorder`:负责Audio系统的输入环节。
+在Android的java层，可以对Audio系统进行控制和数据流操作，其中控制操作和底层的处理基本一致。对于数据流操作来说，由于java不支持指针，因此接口被疯转成了另外的形式。例如在音频输出功能中，通过文件`android_media_AudioTrack.cpp`提供了写字节和写短整型的接口类型：
+
+```cpp
+static jint android_media_AudioTrack_natvie_write(JNIEnv*env,jobject thiz,jbyteArray javaAudioData,
+jint sizeInBytes,jint javaAudioFormat){
+	jbyte* cAudioData=NULL;
+	AudioTrack* lpTrack=NULL;
+	lpTrack=()env->GetIntField(thiz,javaAudioTrackFields,Native_TrackInJavaObj);
+	ssize_t written=0;
+	if(lpTrack->shareBuffer()==0){
+		//进行写操作
+		written=lpTrack->writen(cAuidoData+offsetInBytes,sizeBytes);
+	}else{
+		if(javaAudioFormat==javaAudioTrackFileds.PCM16){
+			memcpy(lpTrack->shareBuffer()->pointer(),
+				cAudioData+offsetInBytes,sizeInBytes);
+			written=sizeInBytes;
+		}else if(javaAudioFormat==javaAudioTrackFields.PCM8){
+			int count =sizeInBytes;
+			int16_t*dat=(int16_t)lpTrack->shareBuffer()->pointer();
+			const int8_t *src=(const int8_t)(cAudioData+offsetInBytes);
+			while(count--){
+				*dat++=(int16_t)(*src++^0x80)<<8;
+			}
+			written=sizeInBytes;
+		}
+		written=sizeInBytes;
+	}
+	env->ReleasePrimitiveArrayCritical(javaAudioData,cAudioData,0);
+	return (int)written;
+}
+```
+
+### 2.4Java代码
+在Android的Audio系统中，和Java相关的类型定义在包`android.media`中，Java部分代码保存在`frameworks/base/media/java/android/media`目录中：
+
+* `android.media.AudioSystem`
+* `android.medai.AudioTrack`
+* `android.media.AuidoRecorder`
+* `android.media.AudioFormat`
+
+前三个类与本地相对应。在AudioFormat提供了一些和Audio相关的枚举值。在此需要注意Audio 的Java 代码中，虽然可以通过AuidoTrack和AudioRecorder的`write()`和`read()`在java层对Audio的数据流进行操作，但是，更多的时候并不需要这样做，而是本地代码直接进行数据输入、输出，而Java代码进行控制类操作，而不是数据流。
