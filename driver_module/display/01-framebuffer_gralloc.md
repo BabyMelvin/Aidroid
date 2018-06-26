@@ -67,7 +67,7 @@ struct fb_info{
 
 ## 1.3硬件抽象层
 ### 1.3.1 版本1.5之前
-显示系统的硬件抽象层位于libui标准库，不需要移植这部分内容。整个只需要移植FrameBuffer驱动程序即可。又因为libui对于FrameBuffer驱动程序使用了标准规则，只要当前系统实现了framebuffer驱动程序，就能够在1.5之前实现显示，去别只是路径。
+显示系统的硬件抽象层位于libui标准库，不需要移植这部分内容。整个只需要移植FrameBuffer驱动程序即可。又因为libui对于FrameBuffer驱动程序使用了标准规则，只要当前系统实现了framebuffer驱动程序，就能够在1.5之前实现显示，区别只是路径。
 
 1.5之前版本硬件抽象层的核心文件`frameworks/base/libui/ui/EGLDisplaySurface.cpp`,核心功能通过mapFrameBuffer()实现的。
 
@@ -220,6 +220,7 @@ status_t EGLDisplaySurface::mapFrameBuffer()
 }
 ```
 <image src="image/01-02.png"/>
+
 ### 1.3.2 版本2.0之后
 2.0之后，Gralloc模块用于显示部分硬件抽象层。因为Gralloc模块灵活，移植方式也是多种多样，具体分为如下两种:
 
