@@ -92,3 +92,55 @@ switch(code){
 		return BBinder::onTransact(code,data,reply,flags);
 }
 ```
+
+* 文件LayerBuffer.cpp(`frameworks/base/libs/surfaceflinger`)，此文件是createOverlay的实现：
+
+```cpp
+sp<OverlayRef> LayerBuffer::SurfaceLayerBuffer::createOverlay(uint32_t w,uint32_t h,int32_t format){
+	//通过OverlaySource来创建overlay
+	sp<OverlaySource> source =new OverlaySource(*this,&result,w,h,format);
+}
+//此函数调用了OverlayHAL的API createOverlay
+LayerBuffer::OverlaySource::OverlaySource()
+{
+	overlay_control_device_t*overlay_dev=mLayer.mFlinger->getOverlayEngine();
+	overlay_t*overlay=overlay_dev->createOverlay(overlay_dev,w,h,format);
+	overlay_dev->setPararmeter(overlay_dev,overlay,OVERLAY_DITHER,OVERLAY_ENABLE);
+	//设置参数，初始化OverlayRef类，OverlayRef的构造函数Overlay.cpp中
+	mOverlay=overlay;
+	mWidth=overlay->w;
+	mHeight=overlay->h;
+	mFormat=overlay->format;
+	mWidthStride=overlay->w_stride;
+	mHeightStride=overlay->h_stride;
+	mInitialized=false;
+	
+	*overlayRef=new OverlayRef(mOverlayHandle,channel,mWidth,mHeiht,mFormat,mWidthStride,mHeightStride);
+}
+```
+
+* 3.管理Overlay HAL 模块
+文件Overlay.cpp(`frameworks/base/libs/ui`)功能是管理OverlayHAL模块，并封装HAL的API
+
+* 3.1 打开Overlay HAL 模块
+
+```cpp
+Overlay::Overlay(const sp<OverlayRef>& overlayRef):mOverlayRef(overlayRef),mOverlayData(0),mStatus(NO_INIT)
+{
+	mOverlayData=NULL;
+	hw_module_t const* module;
+	if(overlayRef!=0){
+		if(hw_get_module(MODULE_HARDWARE_MODULE_ID,&module)==0){
+			if(overlay_data_open(module,&mOverlayData)==NO_ERROR){
+				mStatus=mOverlayData->initialize(mOverlayData,overlayRef->mOverlayHandle);
+			}
+		}
+	}
+}
+```
+需要封装很多需要的API,比如T1自己编写的函数opencore()用于负责视频输出。各个API的实现和编写。
+
+Overlay输出对象两种:
+
+* 一种视频（YUV格式，系统的V4L2）
+* 一种ISurface一些图像（RGB，直接写FrameBuffer）.Skeleton
