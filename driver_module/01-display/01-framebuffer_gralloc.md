@@ -10,7 +10,7 @@ Android显示系统的功能是操作显示设备并获得显示终端。显示�
 * 嵌入式SoC处理器，FrameBuffer通常是LCD控制器或者其他显示设备驱动。
 * Donut（1.5）和Eclair（2.0）不同的Android版本：
 	* 1.5版本及之前，使用`libui`直接调用FrameBuffer驱动程序来实现显示部分。
-	* 2.0之后，增加Gralloc模块，它位于显示设备和libui库中间的一个硬件模块。
+	* 2.0之后，增加Gralloc模块，**它位于显示设备和libui库中间的一个硬件模块**。
 
 2.0以后版本，Gralloc(图形分配），作为显示系统的硬件抽象层来使用。Gralloc模块作为显示系统的硬件抽象层来使用。Gralloc模块保存在`/system/lib/hw`运行过程中使用`dlopen`和`dlsym`方式动态打开并取出符号来使用，系统其它部分没有链接此动态库。该模块可移植的，是系统和显示之间的接口，是以硬件的形式存在。在Android系统中，既可以使用FrameBuffer作为Gralloc模块的驱动程序，也可以在此模块中不使用FrameBuffer驱动。
 
@@ -39,8 +39,8 @@ struct fb_info{
 	atomic_t count;
 	int node;
 	int flags;
-	struct mutex lock;
-	struct mutex mm_lock;
+	struct mutex lock; //lock for open / release /ioctl funcs
+	struct mutex mm_lock; // lock for fb_mmap and smem_* filels
 	//对应应用层ioctl FBIOGET_VSCREENINFO
 	struct fb_var_screeninfo var;//显示屏的信息
 	//对应于FBIOGET_FSCREENINFO
@@ -52,6 +52,14 @@ struct fb_info{
 	struct fb_cmap cmap    ;//当前cmap
 	struct list_head modelist;//模式列表
 	struct fb_videomode * mode;//当前模式
+    struct fb_ops* fbops;
+    struct device* device;//this is the parent
+    struct device* dev;   //this is the fb device
+#define FBINFO_STATE_RUNNING   0
+#define FBINFO_STATE_SUSPENDED 1
+    u32 state;   //hardwaare state
+    void* fbcon_par;  //fbcon use-only private area
+
 };
 ```
 `ioctl`命令也在fb.h中定义:
