@@ -179,3 +179,26 @@ public void dispatchMessage(Message msg){
 ```
 
 ## Looper和Handler同步关系
+
+```
+//线程1
+class LooperThread extends Thread{
+	public Looper myLooper=null;//定义一个public
+	public void run(){
+		Looper.prepare();
+		//myLooper必须这个线程中赋值
+		myLooper=Looper.myLooper();
+		Looper.loop();
+	}
+}
+//下面在线程1中执行，并且创建线程2
+{
+	LooperThread lpThread=new LooperThread;
+	lpThread.start();//start后会创建线程2
+	Looper looper=lpThread.myLooper;
+	//线程1和2挂钩
+	Handler thread2Handler=new Handler(looper);
+	//sendMessage发送雄安喜
+	threadHandler.sendMessage()...;
+}
+```
