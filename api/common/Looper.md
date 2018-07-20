@@ -1,16 +1,15 @@
 # Looper，Message和Handler
-Java应用依靠消息驱动，大致工作原理：
+
+Java应用依靠消息驱动，大致工作原理：两大剑客，一个Binder
 
 * 一个消息队列，可以往消息队列中投递消息。
 * 一个消息循环，不断从队列中取出消息然后处理。
 主要由Looper和Handler来实现：
 
-* Looper类：封装消息循环，并且有一个消息队列
-	* 保证一个线程只有一个Looper对象，即一个消息队列。
-	* 调用Handler的dispatchMessage处理消息
-* Message类
-	* Message类中有一个Handler，处理Message。
-* Handler类：消息投递，消息处理接口。
+* Looper:不断循环执行(`Looper.loop`),按分发机制将消息分发给目标处理者。
+* Message类:分为硬件产生和软件产生的消息。
+* MessageQueue：消息队列的主要功能向消息池投递消息`MessageQueue.enqueueMessage`和取走消息池消息`MessageQueue.next`
+* Handler类：辅助类，向消息池发送各种消息事件。
 
 ## 1.Looper类
 分析Looper的例子：
@@ -202,3 +201,46 @@ class LooperThread extends Thread{
 	threadHandler.sendMessage()...;
 }
 ```
+想要进行线程1和线程2进行交互。但是存在问题可能在`lpThread.myLooper`时候myLooper还未成功创建。
+
+### 解决方案
+
+```java
+public class HandlerThread extends Thread{
+    //线程1 调用getLooper来获得线程的Looper
+    public Looper getLooper(){
+        synchronized(this){
+            while(isAlive() && mLooper==null){
+                try{
+                    //如果新线程还未创建Looper，则等待
+                    wait();
+                }catch (InterruptException e){
+                }
+            }
+        }
+        return mLooper;
+    }
+}
+//线程2运行它的run 函数，looper就是run线程创建的
+public void run(){
+    mTid=Process.myTid();
+    Looper.prepare();//创建这个线程上Looper
+    synchronized (this){
+        mLooper=Looper.myLooper();
+        notifyAll();//通知Looper的线程1,此时Looper已经创建好了
+    }
+    Process.setThreadPriority(mPriority);
+    onLoooper.loop();
+    mTid=-1;
+}
+```
+
+多多使用HandlerThread线程。
+
+
+
+
+
+
+
+
