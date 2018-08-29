@@ -35,7 +35,7 @@ new LooperThread().start();
 
 ### 1.1 其中`prepare()`函数保证：
 
-```
+```java
 public static final void prepare(){
 	//一个线程只能一个Looper
 	if(sThreadLocal.get()!=null){
@@ -50,7 +50,7 @@ private static final ThreadLocal sThreadLocal=new ThreadLocal();
 实现一个线程本地存储，也就是一个变量对每个线程都有自己的值。所有线程共享相同`ThreadLocal<T>`对象，但是每个线程访问它将得到不同的值，并且线程之间修改，相互不影响，并且支持`null`值。
 一个线程只能有一个Looper.通过`ThreadLocal<T>`进行保证。Looper构造函数
 
-```
+```java
 private Looper(){
 	//构造一个消息队列
 	mQueue=new MessageQueue();
