@@ -86,7 +86,7 @@ public static final void loop(){
 
 ## 2.Handler分析
 
-```
+```java
 //成员变量
 final MessageQueue mQueue;//handler中也有一个消息队列
 final Looper mLooper；//也有一个Looper
@@ -133,7 +133,7 @@ Handler提供一些列完成创建和插入消息队列工作：
 * 发送一个消息到队列头，优先级很高`final boolean sendMessageFrontOfQueue(Message msg)`
 * `public final boolean sendMessageDelayed(Message msg,long delayMillis)`
 
-```
+```java
 public final boolean sendMessage(Message msg){
 	return sendMessageDelayed(msg,0);
 }
@@ -197,7 +197,7 @@ class LooperThread extends Thread{
 	Looper looper=lpThread.myLooper;
 	//线程1和2挂钩
 	Handler thread2Handler=new Handler(looper);
-	//sendMessage发送雄安喜
+	//sendMessage发送消息
 	threadHandler.sendMessage()...;
 }
 ```
