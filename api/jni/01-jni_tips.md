@@ -1,5 +1,5 @@
 #JNI
-JNI是java的底层接口。JNI定义java或kotlin字节码和底层(C/C++)交互的方式。
+JNI是java的底层接口。JNI定义java或kotlin字节码和底层(C/C++)交互的方式。编译厂商中立，有时麻烦也是合理有效的。
 1.什么时候需要使用JNI本地方法：
 
 * 标准JAVA库不支持应用要求平台独立的特征。
