@@ -152,4 +152,19 @@ status_t MediaPlayerSerivce::Client::setDataSource(const char*urk,const KeyedVec
 将`mediaplayerservice`中的player记录在`MediaPlayer.cpp`中的mPlayer全局变量中。
 
 # 3.MediaPlayer.prepare()
-都使用`MediaPlayer.prepareAsync()`来进行异步
+都使用`MediaPlayer.prepareAsync()`来进行异步.
+
+![prepare](image/03-03.png)
+
+* `getVideoSurfceTexture(env,thiz)`:获取之前setDisplay中bufferProducer.
+* `mp->setVideoSurfceTexture(st)`:设置该SurfaceTexture.
+* `mp->prepareAsync`
+
+# 4.start
+注意其中有`display_last_frame`限制。
+
+# 5.listener
+
+MediaPlayer.java中的回调是通过message完成，直接回调。
+
+mediaplayerservice对接到底层芯片厂商自己去实现。
