@@ -61,9 +61,9 @@ try {
 ## 2.命名空间
 LocalSocketAddress构造函数的第一个参数String name，是Server创建的socket文件的路径。需要注意的是第二个参数Namespace，有以下三种取值：
 
-* ABSTRACT   ：A socket in the Linux abstract namespace 
-* FILESYSTEM ：A socket named with a normal filesystem path. 
-* RESERVED 	 ：A socket in the Android reserved namespace in `/dev/socket`.
+* `ABSTRACT`   ：A socket in the Linux abstract namespace 
+* `FILESYSTEM` ：A socket named with a normal filesystem path. 
+* `RESERVED` 	 ：A socket in the Android reserved namespace in `/dev/socket`.
 具体选择哪一个（RESERVED貌似是系统用的，我们只需要在ABSTRACT和FILESYSTEM中选择一个），要看Server中实现方式，但是Client和Server一定要统一！！！之前写的Server例子直接就是在文件系统上创建的一个socket文件，所以选择FILESYSTEM。
 
 ABSTRACT何时使用可以参考：Linux manual- unix, AF_UNIX, AF_LOCAL – Sockets for local interprocess communication 大致上是Linux在内存中维护一个socket文件描述符集合，但是不会在文件系统中生成一个具体的socket文件。
