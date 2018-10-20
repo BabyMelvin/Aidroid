@@ -6,10 +6,18 @@ Java应用依靠消息驱动，大致工作原理：两大剑客，一个Binder
 * 一个消息循环，不断从队列中取出消息然后处理。
 主要由Looper和Handler来实现：
 
-* Looper:不断循环执行(`Looper.loop`),按分发机制将消息分发给目标处理者。
+* Looper:不断循环执行(`Looper.loop`),按分发机制将消息分发给目标处理者。（**与线程挂钩**）
 * Message类:分为硬件产生和软件产生的消息。
 * MessageQueue：消息队列的主要功能向消息池投递消息`MessageQueue.enqueueMessage`和取走消息池消息`MessageQueue.next`
-* Handler类：辅助类，向消息池发送各种消息事件。
+* Handler类：辅助类，向消息池发送各种消息事件(`Handler.sendMessage`)和处理相应消息(`Handler.handleMessage`)。
+
+![](image/looper01.jpg)
+几个类图
+
+* Looper:有一个MessageQueue消息队列
+* MessageQueue有一组待处理的Message
+* Message中有一个用于处理消息的handler
+* Handler中有一个Looper和MessageQueue
 
 ## 1.Looper类
 分析Looper的例子：
@@ -51,16 +59,31 @@ private static final ThreadLocal sThreadLocal=new ThreadLocal();
 一个线程只能有一个Looper.通过`ThreadLocal<T>`进行保证。Looper构造函数
 
 ```java
-private Looper(){
+private Looper(boolean quitAllowed){
 	//构造一个消息队列
-	mQueue=new MessageQueue();
+	mQueue=new MessageQueue(quitAllowed);
 	mRun=true();
 	//得到当前线程的Thread对象	
 	mThread=Thread.currentThread();
 }
 ```
 
-### 1.2Looper循环
+与prepare()相近功能的，还有一个`prepareMainLooper()`方法，该方法主要在ActivityThread类中使用。
+
+```java
+public static void prepareMainLooper(){
+	//设置不允许退出looper
+	prepare(false);
+	synchronized(Looper.class){
+		//将当前的Looper保存在looper，每个线程只允许执行一次
+		if(sMainLooper!=null){
+			throw new IllegalStateException("The main Looper has already been prepared");
+		}
+		mMainLooper=myLooper();
+	}
+}
+```
+### 1.2looper循环
 
 ```java
 public static final void loop(){	
@@ -83,8 +106,64 @@ public static final void loop(){
 	}
 }
 ```
+looper进入循环，不断重复下面操作，直到没有消息时推出循环：
 
+* 读取MeesageQueue的下一条Message(可能阻塞)
+* 把Message分发给相应的target；
+* 再把分发后的Message回收到消息池，以便重复利用。
+
+### 1.3 quit()
+
+```java
+public void quit(){
+	//消息移除,可能有消息还未发送完成，不安全
+	mQueue.quit(false);
+}
+public void quitSafely(){
+	//安全的移除消息
+	mQueue.quit(true);
+}
+```
+`Looper.quit()`方法的实现最终调用的是`MessageQueue.quit()`方法
+
+```java
+void quit(boolean safe){
+	if(!mQuitAllowed){
+		throw new RuntimeException("Main thread not allowed to quit.");
+	}
+	sychronized(this)}
+		if(mQutting) return;
+		mQuitting = true;
+		if(safe){
+			removeAllFutrueMessageLocked();
+		}else{
+			removeAllMessageLocked();
+		}
+		//we can assume mPtr!=0
+		//because mQuitting was previously false
+		nativeWake(mPtr);
+	}
+}
+```
+
+消息退出方式：
+
+* 当safe = true时，只移除尚未出发所有消息，对于正在出发的消息并不移除
+* 当safe = false时，移除所有消息。
+
+### 1.4常用方法
+
+### myLooper
+获取用于TLS存储的Looper对象
+
+```java
+public static @Nullable Looper myLooper(){
+	return sThreadLocal.get();
+}
+```
 ## 2.Handler分析
+
+### 2.1 创建Handler
 
 ```java
 //成员变量
@@ -237,10 +316,260 @@ public void run(){
 
 多多使用HandlerThread线程。
 
+## 3.消息机制
 
+### 3.1 分发机制
+在`Looper.loop()`中，当发现有消息时，调用消息的目标handler，执行`dispatchMessage()`方法来分发消息。
 
+```java
+public void dispatchMessage(Message msg){
+		if(msg.callback != null){
+		//当message存在回调方法，回调msg.callback.run()方法
+		handleCallback(msg);
+	}else{
+		if(mCallback!=null){
+			//当handler存在Callback成员变量时，回调方法handleMessage()
+			if(mCallback.handleMessage(msg){
+				return;
+			}
+		}
+		//Handler自身的回调方法handleMessage()
+	}
+}
+```
 
+分发消息流程：
 
+* 1.当`Message`的回调不为空，则回调`msg.callback.run();`，其中callBack数据类型为Runnable；否则进入步骤2
+* 2.当Handler的mCallback成员变量不为空时，则回调`mCallback.handleMessage(msg);`，否则进入步骤3
+* 3.调用Handler自身回调方法`handleMessage()`,该方法默认为空，Handler子类通过复写该方法实现逻辑。
 
+对于很多情况下，消息分发后的处理方法是第3种情况，即Handler.handleMessage()，一般地往往通过覆写该方法从而实现自己的业务逻辑。
 
+### 3.1 消息发送机制
 
+发送消息调用链：
+
+![](image/java_sendmessage.png)
+
+从上图，可以发现所有的发消息方式，最终都是调用`MessageQueue.enqueueMessage();`
+
+其他方法：
+
+* `obtainMessage()`获取消息调用`Message.obtain(this);`
+`Handler.obtainMessage()`方法，最终调用`Message.obtainMessage(this)`，其中this为当前的Handler对象。
+* `removeMessages`调用`mQueue.removeMessages(this,what,null);`
+
+Handler是消息机制中非常重要的辅助类，更多的实现都是MessageQueue, Message中的方法，Handler的目的是为了更加方便的使用消息机制。
+
+## 4. MessageQueue
+`MessageQueue`是消息机制的**Java层和C++层的连接纽带**，大部分核心方法都交给native层来处理，其中MessageQueue类中涉及的native方法如下：
+
+```java
+private native static long nativeInit();
+private native static void nativeDestroy(long ptr);
+private native void nativePollOnce(long ptr,int timeoutMillis);
+private native static void nativeWake(long ptr);
+private native static boolean nativeIsPolling(long ptr);
+private native static void nativeSetFileDescriptorEvents(long ptr,int fd,int events);
+```
+
+### 4.1创建MessageQueue
+
+```java
+MessageQueue(quitAllowed){
+	mQuitAllowed=quitAllowed;
+	mPtr=nativeInit();
+}
+```
+
+### 4.2 enqueueMessage
+添加一条消息到消息队列
+
+```java
+boolean enqueueMessage(Message msg,long when){
+	//每一个普通大的Message必须有一个target
+	if(msg.target == null){
+		throw new IllegalArgumentException("Message must have a target.");
+	}
+	if(msg.isInUse()){
+		throw new IllegalStateException(msg+"This message is already in use.");
+	}
+	sychronize(this){
+		if(mQuitting){
+		//正在退出时，回收msg,计入消息池
+			msg.recycle()
+			return false;
+		}
+		msg.makeInUse();
+		msg.when=when;
+		Message p = mMessage;
+		boolean needWake;
+		if(p ==null || when ==0 ||when<p.when){
+			//p 为null(代表MessageQueue没有消息)或者msg的触发时间是队列最早的，则进入该分支
+			msg.next=p;
+			mMessage=msg;
+	
+			//当阻塞时需要唤醒
+			needWake=mBlocked;
+		}else{
+			//将消息按时间顺序插入到MessageQueue，一般地，不需要唤醒事件队列，除非
+			//消息队列开头在barrier,并且同时Message是队列中最早的异步消息
+			needWake=mBlocked && p.target==null && msg.isAsynchronous();
+			Message prev;
+			for(;;){
+				prev = p;
+				p = p.next;
+				if(p == null || when <p.when){
+					break;
+				}
+				if(needWake && p.isAsynchronous){	
+					needWake = false;
+				}
+			}
+			msg.next = p;
+			pre.next = msg;
+		}
+		//消息没有退出，我们认为此时mPtr != 0
+		if(needWake){
+			nativeWake(mPtr);
+		}
+	}
+	return true;
+}
+```
+`MessageQueue`是按照Message触发时间的先后顺序排列的，队头的消息是将要最早触发的消息。当有消息需要加入消息队列时，会从队列头开始遍历，直到找到消息应该插入的合适位置，以保证所有消息的时间顺序。
+
+## 4.3 next()
+提取下一条 message
+
+```java
+Message next(){
+	final long ptr=mPtr;
+	//当消息循环已经退出，则直接返回
+	if(ptr == 0){
+		return null;
+	}
+	//循环迭代的首次为-1
+	int pendingIdleHandlerCount=-1;
+	int nextPollTimeoutMillis =0;
+	for(;;){
+		if(nextPollTimeoutMillis !=0){
+			Binder.flushPendingCommands();
+		}
+		//阻塞操作，当等待nexPollTimeoutMillis时长，或者消息队列被唤醒，都会返回
+		nativePollOnce(ptr,nextPollTimeoutMillis);
+		sychronized(this){
+			final long now=SystemClock.uptimeMillis();
+			Message prevMsg=null;
+			Message msg=mMessages;
+			if(msg!=null&&msg.targe==null){
+				//当消息Handler为空时，查询MessageQueue中的下一条异步消息msg，则退出循环
+				do{
+					preMsg=msg;
+					msg=msg.next;
+				}while(msg!=null && !msg.isAsynchronous());			
+				if(msg != null){
+					if(now <msg.when){
+						//当异步消息触发时间大于当前时间，则设置下次一个轮询超时时长
+						nextPollTimeoutMillis=(int)Math.min(msg.when - now,Integer.MAX_VALUE);
+					}else{
+						//获取一条消息，并返回
+						mBlocked=false;
+						if(prevMsg!=null){
+							prevMsg.next=msg.next;
+						}else{
+							mMessage=msg.next;
+						}
+						msg.next=null;
+						//设置消息的使用状态，即flags |=FLAG_IN_USE
+						msg.makeInUse();
+						//成功获取下一条即将执行的消息
+				
+						return msg;
+					}else{
+						//没有消息
+						nextPollTimeoutMillis=-1;
+					}
+					//消息正在退出，返回null
+					if(mQuitting){
+						dispose();
+						return null;
+					}
+					//当消息队列为空，或者是消息队列的第一个消息时
+					if(pendingIdleHandlerCount<0 && (mMessages==null || now <mMessages.when)){
+						pendingIdleHandlerCount = mIdleHandlers.size();
+					}
+					if(pendingIdleHandlerCount<=0){
+						//没有idle handlers 需要运行，则循环并等待
+						mBlock=true;
+						continue;
+					}
+					if(pendingIdleHandler==null){
+						mPendingIdleHandlers=new IdleHandler[Math.max(pendingIdleHandlerCount,4)];	
+					}
+					mPendingIdleHandlers=mIdleHandlers.toArray(mPendingIdleHandlers);
+				}
+				//只有一次循环时，会运行idle handlers，执行完成后，重置pendingIdleHandlerCount为0
+				for(int i=0;i<pendingIdleHandlerCount;i++){
+					final IdleHandler idler=mPendingIdleHandlers[i];
+					mPendingIdleHandlers[i]=null;
+					boolean keep=false;
+					try{
+				
+						//idle时执行的方法		keep=idler.queueIdle();
+					}catch(Throwable t){
+					}
+					if(!keep){
+						synchronize(this){
+						mIdleHandlers.remove(idler);
+						}
+					}
+				}
+				//重置idle handler 个数为0,以保证不会再次重置运行
+				pendingIdleHandlerCount=0;
+				//当调用一个空闲handler时，一个新message能够被分发，因此无需等待可以直接查询pending message
+				nextPollTimeoutMillis=0;
+			}
+		}
+	}
+}
+```
+
+`nativePollOnce`是阻塞操作，其中`nextPollTimeoutMillis`代表下一个消息到来前，还需要等待的时长；当`nextPollTimeoutMillis=-1`时，表示消息队列中无消息，会一直等待下去.
+
+当处于空闲时，往往会执行`IdleHandler`中的方法。当nativePollOnce()返回后，`next()`从mMessages中提取一个消息。
+
+`nativePollOnce()`在native做了大量的工作。
+
+## 4.4removeMessages
+
+```java
+void removeMessages(Handler h,int what,Object object){
+	if(h==null) return;
+	synchronized(this){
+		//Messasge p=mMessages;
+		//从消息队列的头部开始，移除所有符合条件的消息
+		while(p！=null && p.target ==h && p.what ==what && (object ==null ||p.object ==object)){
+			Message n=p.next;
+			mMessages =n;
+			p.recycleUnchecked();
+			p=n;
+		}
+		//移除剩余的符合要求的消息
+		while(p !=null){
+			Message n =p.next;
+			if(n!=null){
+				if(n.target ==h && n.what ==what && (object ==null ||n.obj ==object)){
+					Message nn=n.next;
+					n.recycleUnchecked();
+					p.next =nn;	
+					continue;
+				}
+			}
+			p=n;
+		}
+	}
+}
+```
+这个移除消息的方法，采用了两个while循环，第一个循环是从队头开始，移除符合条件的消息，第二个循环是从头部移除完连续的满足条件的消息之后，再从队列后面继续查询是否有满足条件的消息需要被移除。
