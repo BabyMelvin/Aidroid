@@ -7,6 +7,11 @@ Android O与之前的Android 版本相比，多出了一个`vendor.img`分区.�
 老版本的android 的系统框架当中framework与HAL之间的一般架构框架是:
 
 ![](image/rEjQrBM.png)
+
+![](image/20171208133147567.png)
+
+**指纹应用层**，也就是手机上的指纹设置，这是Android系统层定义的指纹管理入口。
+
 上面的框架结构中，Android framework跟Android HAL耦合度比较高，每次升级framework都需要升级对应的HAL，这个需要OEM厂商花费很大的精力。
 
 上面的框架结构中，Android framework跟Android HAL耦合度比较高，每次升级framework都需要升级对应的HAL，这个需要OEM厂商花费很大的精力。 
@@ -23,6 +28,37 @@ Android O及之后的版本的框架：
 ![](image/pB66Elx.png)
 
 ## 2.指纹启动流程分析
+
+### 2.1 Android 6.0
+
+1.`system/core/rootdir/init.rc`中启动`system/core/Fingerprintd`指纹的守护进程。
+
+```
+service fingerprintd /system/bin/fingerprintd
+	class last_start
+	user system
+```
+
+2.`fingerprint Hal`通过指纹厂商的驱动程序访问指纹硬件
+在这一层，如果不在TEE中实现，则是指纹HAL层库，直接访问指纹硬件驱动。
+
+目前Google要求指纹必须在TEE中实现，因此此处的HAL层也可以称之为`指纹CA`。
+
+一般情况下，指纹CA代码会在如下目录:
+
+```
+/hardware/libhardware/include/hardware/fingerprint.h
+
+/hardware/libhardware/modules/fingerprint
+```
+不同厂商的TEE系统，指纹厂商必须进行适配。
+
+3.指纹TA
+由于在TEE系统已经接管了指纹硬件SPI接口，因此指纹TA中封装了操作指纹函数接口。
+那指纹驱动现在还有啥作用？
+
+`\kernel-3.18\drivers\misc\mediatek\fingerprint\`:**主要是GPIO的设置以及设备服务操作等等**
+### 2.2 Android O
 
 1.`frameworks\base\services\core\java\com\android\server\fingerprint\FingerprintService.java`
 
