@@ -49,7 +49,7 @@ include $(TA_DEV_KIT_DIR)/mk/ta_dev_kit.mk
 ```
 5.添加该TA需要处理的逻辑代码
 
-添加TA的具体实现代码，也即是该TA需要实现什么功能，在本例子中将该部分的代码存放在my_test_handle.c文件中，本工程的所有TA和CA的代码将最文章source code章节中给出
+添加TA的具体实现代码，也即是该TA需要实现什么功能，在本例子中将该部分的代码存放在`my_test_handle.c`文件中
 
 ![](image/20170510115636564.png)
 

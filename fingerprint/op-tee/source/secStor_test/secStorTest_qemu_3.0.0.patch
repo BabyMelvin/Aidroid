@@ -1,0 +1,31 @@
+diff --git a/qemu.mk b/qemu.mk
+index b0775bb..5f726da 100644
+--- a/qemu.mk
++++ b/qemu.mk
+@@ -28,10 +28,10 @@ ifeq ($(CFG_TEE_BENCHMARK),y)
+ all: benchmark-app
+ clean: benchmark-app-clean
+ endif
+-all: bios-qemu qemu soc-term optee-examples
++all: bios-qemu qemu soc-term optee-examples secStorTest
+ clean: bios-qemu-clean busybox-clean linux-clean optee-os-clean \
+ 	optee-client-clean qemu-clean soc-term-clean check-clean \
+-	optee-examples-clean
++	optee-examples-clean secStorTest-clean
+ 
+ include toolchain.mk
+ 
+@@ -140,6 +140,13 @@ optee-examples: optee-examples-common
+ 
+ optee-examples-clean: optee-examples-clean-common
+ 
++############################################################################
++# secure storage test
++#############################################################################
++secStorTest: secStorTest-common
++
++secStorTest-clean: secStorTest-clean-common
++
+ ################################################################################
+ # benchmark
+ ################################################################################
