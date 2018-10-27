@@ -1,94 +1,11 @@
-
-/****************************************************************************************/
-/*                          COPYRIGHT INFORMATION                                       */
-/*    This program contains proprietary information which is a trade                    */
-/*    secret of whaley Co., Ltd.and also is protected as an   unpublished               */
-/*    work under applicable Copyright laws. Recipient is to retain this                 */
-/*    program in confidence and is not permitted to use or make copies thereof          */
-/*    other than as permitted in a written agreement written agreement with             */
-/*    whaley Co., Ltd.                                                                  */
-/*                                                                                      */
-/*    All rights reserved. shuaifengyun@126.com                                         */
-/****************************************************************************************/
-/*
- ****************************************************************************************
- *
- *               my_test_handle.c
- *
- * Filename      : my_test_handle.c
- * Programmer(s) : system BSP
- * Filename      : my_test_handle.c
- * Author        : Shuai Fengyun
- * Mail          : shuaifengyun@126.com
- * Create Time   : 2017年05月04日 星期四 10时43分49秒
- ****************************************************************************************
- */
-
 #define MOUDLE_MY_TEST_HANDLE_C_
 
-/** @defgroup MODULE_NAME_INFOR
-* @{
-*/
-
-/*
- *******************************************************************************
- *                                INCLUDE FILES
- *******************************************************************************
-*/
 #include "tee_internal_api.h"
 #include "tee_api_defines.h"
 #include "trace.h"
 #include "tee_api_defines_extensions.h"
 #include "my_test_handle.h"
 #include "my_test_ta.h"
-
-
-
-/*
- *******************************************************************************
- *                         FUNCTIONS SUPPLIED BY THIS MODULE
- *******************************************************************************
-*/
-
-
-
-
-
-/*
- *******************************************************************************
- *                          VARIABLES SUPPLIED BY THIS MODULE
- *******************************************************************************
-*/
-
-
-
-
-
-/*
- *******************************************************************************
- *                          FUNCTIONS USED ONLY BY THIS MODULE
- *******************************************************************************
-*/
-
-
-
-
-
-/*
- *******************************************************************************
- *                          VARIABLES USED ONLY BY THIS MODULE
- *******************************************************************************
-*/
-
-
-
-
-
-/*
- *******************************************************************************
- *                               FUNCTIONS IMPLEMENT
- *******************************************************************************
-*/
 
 void g_TA_printf(CHAR* buf, UINT32 len)
 {
@@ -122,8 +39,6 @@ void g_TA_printf(CHAR* buf, UINT32 len)
  *
  * @return     void
  * @retval     void
- *
- *
  */
 static int l_CryptoTaHash_sha(EN_SHA_MODE shaMode, CHAR* input, UINT32 inLen, CHAR* output, UINT32* pOutLen)
 {
@@ -192,12 +107,6 @@ static void l_CryptoTaOther_Random(UINT32 len, CHAR* output)
     TEE_GenerateRandom(output, len);
 }
 
-
-
-
-
-
-
 int g_CryptoTaHandle_Sha(uint32_t paramTypes, TEE_Param params[4])
 {
     EN_SHA_MODE l_shaMode;
@@ -222,8 +131,6 @@ int g_CryptoTaHandle_Sha(uint32_t paramTypes, TEE_Param params[4])
 
     return OK;
 }
-
-
 
 int g_CryptoTaHandle_Random(uint32_t paramTypes, TEE_Param params[4])
 {

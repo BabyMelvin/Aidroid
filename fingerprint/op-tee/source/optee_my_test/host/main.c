@@ -1,30 +1,3 @@
-/*
- * Copyright (c) 2016, Linaro Limited
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
-
 #include <err.h>
 #include <stdio.h>
 #include <string.h>
@@ -125,20 +98,16 @@ int l_CryptoVerifyCa_OpenSession(TEEC_Session* session)
     int l_RetVal = FAIL;
     uint32_t origin;
 
-    result = TEEC_OpenSession(&g_TaskContext, session, &svc_id, 
-                                TEEC_LOGIN_PUBLIC, NULL, NULL, &origin);
+    result = TEEC_OpenSession(&g_TaskContext, session, &svc_id, TEEC_LOGIN_PUBLIC, NULL, NULL, &origin);
     if(result != TEEC_SUCCESS) 
     {
         printf("OpenSession failed, ReturnCode=0x%x, ReturnOrigin=0x%x\n", result, origin);
         g_TaskInitFlag = -1;
         l_RetVal = FAIL;
-    } 
-    else 
-    {
+    } else {
         printf("OpenSession success\n");
         l_RetVal = OK;
     }
-
     return l_RetVal;
 }
 
@@ -154,14 +123,10 @@ int l_CryptoVerifyCa_SendCommand(TEEC_Operation* operation, TEEC_Session* sessio
     {
         printf("InvokeCommand failed, ReturnCode=0x%x, ReturnOrigin=0x%x\n", result, origin);
         l_RetVal = FAIL;
-    } 
-    else 
-    {
+    } else {
         printf("InvokeCommand success\n");
         l_RetVal = OK;
     }
-
-
     return l_RetVal;
 }
 
@@ -170,16 +135,16 @@ void g_CryptoVerifyCa_Helloworld(void)
 {
     TEEC_Session   l_session;    /* Define the session of TA&CA */
     TEEC_Operation l_operation;  /* Define the operation for communicating between TA&CA */
-    int l_RetVal = FAIL;       /* Define the return value of function */
+    int l_RetVal = FAIL;         /* Define the return value of function */
 
-    /**1) Initialize this task */
+    //TODO 1.Initialize this task 
     l_RetVal = l_CryptoVerifyCa_TaskInit();
     if(FAIL == l_RetVal)
     {
         goto cleanup_1;
     }
 
-    /**2) Open session */
+    //TODO 2.Open session */
     l_RetVal = l_CryptoVerifyCa_OpenSession(&l_session);
     if(FAIL == l_RetVal)
     {
@@ -189,22 +154,19 @@ void g_CryptoVerifyCa_Helloworld(void)
     /* Clear the TEEC_Operation struct */
     memset(&l_operation, 0, sizeof(TEEC_Operation));
 
-    /*
-     * Prepare the argument. Pass a value in the first parameter,
-     * the remaining three parameters are unused.
-     */
-    l_operation.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INOUT, TEEC_NONE,
-                     TEEC_NONE, TEEC_NONE);
+    //TODO 3.Prepare the argument. Pass a value in the first parameter,the remaining three parameters are unused.
+	//4个参数,params[3]等
+    l_operation.paramTypes = TEEC_PARAM_TYPES(TEEC_VALUE_INOUT, TEEC_NONE,TEEC_NONE, TEEC_NONE);
     l_operation.params[0].value.a = 42;
 
-    /**4) Send command to TA */
+    //TODO 4.Send command to TA(Operation:参数情况，Sesssion:SessionID,CommandID)
     l_RetVal = l_CryptoVerifyCa_SendCommand(&l_operation, &l_session, TA_MY_TEST_CMD_INC_VALUE);
     if(FAIL == l_RetVal)
     {
         goto cleanup_3;
     }
 
-    /**5) The clean up operation */
+    //TODO 5.The clean up operation 
     cleanup_3:
         TEEC_CloseSession(&l_session);
     cleanup_2:
