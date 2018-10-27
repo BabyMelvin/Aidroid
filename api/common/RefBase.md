@@ -36,18 +36,18 @@ sp<ProcessState> proc(ProcessState::self());//采用括号方式2
 sp<ProcessState> gProcess=new ProcessState;//等号方式4
 ```
 
-**注意**:首次调用对象incStrong()，则会调用该对象onFirstRef()，调用decStrong()的最后一次，则会调用该对象onLastStrongRef().
+**注意**:首次调用对象`incStrong()`，则会调用该对象`onFirstRef()`，调用`decStrong()`的最后一次，则会调用该对象`onLastStrongRef()`.
 弱引用不能直接操作目标对象的根本原因是若指针没有重载`*`和`->`操作符号。
 
-可通过promote()函数,将弱引用提升为强引用对象：
+可通过`promote()`函数,将弱引用提升为强引用对象：
 
 * promote作用试图增加目标对象的强引用计数
 * 由于目标对象可能被delete掉了，或者是其它原因到时提升失败。
 
 ## 2.生命周期
 
-* flag为OBJECT_LIFETIME_STRONG,强引用计数控制对象生命周期，弱引用计数控制weak_impl对象生命周期
+* flag为`OBJECT_LIFETIME_STRONG`,强引用计数控制对象生命周期，弱引用计数控制weak_impl对象生命周期
     * 强引用计数为0后，实际对象被delete掉。这种情况应使用wp要由弱升强。
-* flag为LIFETIME_WEAK:强引用计数为0，弱引用计数不为0，实际对象不会被delete
+* flag为`LIFETIME_WEAK`:强引用计数为0，弱引用计数不为0，实际对象不会被delete
     * 当弱引用计数为0时，实际对象和weakref_impl对象会同时被delete
-* flag为LIFETIME_FOREVER:对象不受强弱引用计数控制，永不会被回收。
+* flag为`LIFETIME_FOREVER`:对象不受强弱引用计数控制，永不会被回收。
