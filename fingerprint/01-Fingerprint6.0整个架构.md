@@ -1,5 +1,9 @@
 # 1.Fingerprint模块架构
 
+* `RPC`,远程调用(Remote Process Control)
+* eMMC应用教程：关于RPMB的应用 RPMB的意思是Replay Protected Memory Block。 主要的作用是存放一些核心敏感数据。 场景三：存储敏感密码，比如指纹信息，用于防盗等。
+
+
 Fingerprint模块架构图如下，这里分为`application`，`framework`，`fingerprintd`和`FingerprintHal`这几个部分,不涉及**指纹的IC库**(Integrated Circuit Card，集成电路卡)和**驱动**这部分,这部分逻辑由指纹厂商来实现，目前了解的并不多。
 
 ![](image/fp_communication.png)

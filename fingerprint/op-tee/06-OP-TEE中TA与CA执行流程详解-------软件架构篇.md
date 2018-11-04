@@ -16,10 +16,10 @@
 
 在《OP-TEE中TA与CA执行流程介绍》系列文章中，笔者将以实际的CA和TA例子为例，分别按照如下章节对整个过程做详细的介绍：
 
-* 1. CA部分的代码介绍
-* 2. TEE_Client_API(libteec)的实现
-* 3. tee_supplicant服务介绍
-* 4. OP-TEE在linux端的驱动
-* 5. Monitor mode中的处理
-* 6. OP-TEE OS中thread的handle
-* 7. TA部分的代码介绍
+* 1.CA部分的代码介绍
+* 2.TEE_Client_API(libteec)的实现
+* 3.tee_supplicant服务介绍
+* 4.OP-TEE在linux端的驱动
+* 5.Monitor mode中的处理
+* 6.OP-TEE OS中thread的handle
+* 7.TA部分的代码介绍

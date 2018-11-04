@@ -1,0 +1,71 @@
+diff --git a/common.mk b/common.mk
+index 690499e..03bb6bf 100644
+--- a/common.mk
++++ b/common.mk
+@@ -19,6 +19,7 @@ OPTEE_TEST_OUT_PATH		?= $(ROOT)/optee_test/out
+ OPTEE_EXAMPLES_PATH		?= $(ROOT)/optee_examples
+ BENCHMARK_APP_PATH		?= $(ROOT)/optee_benchmark
+ LIBYAML_LIB_PATH		?= $(BENCHMARK_APP_PATH)/libyaml/out/lib
++SEC_STORAGE_TEST_PATH		?= $(ROOT)/secStor_test
+ 
+ # default high verbosity. slow uarts shall specify lower if prefered
+ CFG_TEE_CORE_LOG_LEVEL		?= 3
+@@ -305,7 +306,7 @@ OPTEE_OS_CLEAN_COMMON_FLAGS ?= $(OPTEE_OS_COMMON_EXTRA_FLAGS)
+ ifeq ($(CFG_TEE_BENCHMARK),y)
+ optee-os-clean-common: benchmark-app-clean-common
+ endif
+-optee-os-clean-common: xtest-clean optee-examples-clean
++optee-os-clean-common: xtest-clean optee-examples-clean secStorTest-clean
+ 	$(MAKE) -C $(OPTEE_OS_PATH) $(OPTEE_OS_CLEAN_COMMON_FLAGS) clean
+ 
+ OPTEE_CLIENT_COMMON_FLAGS ?= CROSS_COMPILE=$(CROSS_COMPILE_NS_USER) \
+@@ -370,6 +371,25 @@ optee-examples-clean-common:
+ 			$(OPTEE_EXAMPLES_CLEAN_COMMON_FLAGS) clean
+ 
+ ################################################################################
++# secure storage test
++################################################################################
++SEC_STORAGE_COMMON_FLAGS ?= HOST_CROSS_COMPILE=$(CROSS_COMPILE_NS_USER)\
++	TA_CROSS_COMPILE=$(CROSS_COMPILE_S_USER) \
++	TA_DEV_KIT_DIR=$(OPTEE_OS_TA_DEV_KIT_DIR) \
++	TEEC_EXPORT=$(OPTEE_CLIENT_EXPORT)
++
++.PHONY: secStorTest-common
++secStorTest-common: optee-os optee-client
++	$(MAKE) -C $(SEC_STORAGE_TEST_PATH) $(SEC_STORAGE_COMMON_FLAGS)
++
++SEC_STORAGE_CLEAN_COMMON_FLAGS ?= TA_DEV_KIT_DIR=$(OPTEE_OS_TA_DEV_KIT_DIR)
++
++.PHONY: secStorTest-clean-common
++secStorTest-clean-common:
++	$(MAKE) -C $(SEC_STORAGE_TEST_PATH) \
++			$(SEC_STORAGE_CLEAN_COMMON_FLAGS) clean
++
++################################################################################
+ # benchmark_app
+ ################################################################################
+ BENCHMARK_APP_COMMON_FLAGS ?= CROSS_COMPILE=$(CROSS_COMPILE_NS_USER) \
+@@ -408,7 +428,7 @@ ifeq ($(CFG_TEE_BENCHMARK),y)
+ filelist-tee-common: benchmark-app
+ endif
+ filelist-tee-common: fl:=$(GEN_ROOTFS_FILELIST)
+-filelist-tee-common: optee-client xtest optee-examples
++filelist-tee-common: optee-client xtest optee-examples secStorTest
+ 	@echo "# filelist-tee-common /start" 				> $(fl)
+ 	@echo "dir /lib/optee_armtz 755 0 0" 				>> $(fl)
+ 	@if [ -e $(OPTEE_EXAMPLES_PATH)/out/ca ]; then \
+@@ -423,6 +443,14 @@ filelist-tee-common: optee-client xtest optee-examples
+ 			"$$file 755 0 0"				>> $(fl); \
+ 		done; \
+ 	fi
++	@echo "#Secure storage test"    >> $(fl)
++	@if [ -e $(SEC_STORAGE_TEST_PATH)/host/secStorTest  ]; then \
++		echo "file /bin/secStorTest" \
++			"$(SEC_STORAGE_TEST_PATH)/host/secStorTest 755 0 0"	>> $(fl); \
++		echo "file /lib/optee_armtz/59e4d3d3-0199-4f74-b94d-53d3daa57d73.ta" \
++		"$(SEC_STORAGE_TEST_PATH)/ta/59e4d3d3-0199-4f74-b94d-53d3daa57d73.ta 444 0 0" \
++			>> $(fl); \
++	fi
+ 	@echo "# xtest / optee_test" 					>> $(fl)
+ 	@find $(OPTEE_TEST_OUT_PATH) -type f -name "xtest" | \
+ 		sed 's/\(.*\)/file \/bin\/xtest \1 755 0 0/g' 		>> $(fl)
