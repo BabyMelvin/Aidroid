@@ -1,4 +1,4 @@
-#深入理解SELinux SEAndroid
+# 深入理解SELinux SEAndroid
 
 SEAndroid是Google在Android 4.4上正式推出的一套以SELinux为基础于核心的系统安全机制。从2.6开始，SELinux正式入驻内核，成为标配。
 
@@ -43,7 +43,7 @@ SELinux中，每种东西都会被赋予一个安全属性，官方说法叫`Sec
 
 * `u`为user的意思。SEAndroid中定义了一个SELinux用户，值为u。
 * `r`为role的意思。role是角色之意，它是SELinux中一种比较高层次，更方便的权限管理思路，即Role Based Access Control（基于角色的访问控制，简称为RBAC）。简单点说，一个u可以属于多个role，不同的role具有不同的权限。RBAC我们到最后再讨论。
-* `ini`t，代表该进程所属的`Domai`n为init。**MAC的基础管理思路**其实不是针对上面的RBAC，**而是所谓的Type Enforcement Accesc Control**（简称TEAC，一般用`TE`表示）。对进程来说，Type就是Domain。比如`init`这个`Domain`有什么权限，都需要通过`[例子1]`中`allow`语句来说明。
+* `init`，代表该进程所属的`Domain`为init。**MAC的基础管理思路**其实不是针对上面的RBAC，**而是所谓的Type Enforcement Accesc Control**（简称TEAC，一般用`TE`表示）。对进程来说，Type就是Domain。比如`init`这个`Domain`有什么权限，都需要通过`[例子1]`中`allow`语句来说明。
 * `S0`:SELinux为了满足军用和教育行业而设计的Multi-Level Security（MLS）机制有关。简单点说，MLS将系统的进程和文件进行了分级，不同级别的资源需要对应级别的进程才能访问。后文还将详细介绍MLS。
 
 再来看文件的SContext，读者可通过`ls -Z`来查看，如图2所示：
@@ -160,7 +160,8 @@ class命令的完整格式是：`class class_name [ inherits common_name ] { per
 * `inherits`表示继承了某个common定义的权限.**注意**，class命令定义的权限其实针对得就是某个object class。它不能被其他class继承.
 
 ```
-class dir inherits file {
+class dir 
+inherits file {
    add_name  remove_name reparent search rmdir open audit_access execmod
 }
 ```
