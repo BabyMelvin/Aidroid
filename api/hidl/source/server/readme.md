@@ -53,3 +53,9 @@ $source hardware/interfaces/update-makefiles.sh
 		</interface>
 </hal>
 ```
+
+# 5.current
+
+```
+hidl-gen -L hash -r android.hardware:hardware/interfaces -r android.hidl:system/libhidl/transport android.hardware.melvin@1.0 >> ./current.txt
+```
