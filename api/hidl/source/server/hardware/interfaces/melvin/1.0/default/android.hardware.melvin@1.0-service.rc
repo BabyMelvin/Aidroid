@@ -1,0 +1,4 @@
+service melvin_hal_service /vendor/bin/hw/android.hardware.melvin@1.0-service
+    class hal
+    user system
+    group system

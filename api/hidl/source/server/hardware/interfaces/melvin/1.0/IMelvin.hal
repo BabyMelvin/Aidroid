@@ -1,0 +1,5 @@
+package android.hardware.melvin@1.0;
+
+interface IMelvin {
+    helloWorld(string name) generates (string result);
+};

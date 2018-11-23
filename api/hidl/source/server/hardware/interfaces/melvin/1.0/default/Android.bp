@@ -1,0 +1,20 @@
+cc_library_shared {
+    name: "android.hardware.melvin@1.0-impl",
+    defaults: ["hidl_defaults"],
+    relative_install_path: "hw",
+    proprietary: true,
+    vendor: true,
+    srcs: [
+        "Melvin.cpp",
+        "service.cpp",
+    ],
+    init_rc: ["android.hardware.melvin@1.0-service.rc"],
+    shared_libs: [
+        "libhidlbase",
+        "libhidltransport",
+        "libutils",
+        "android.hardware.melvin@1.0",
+        "android.hidl.base@1.0",
+        "liblog"
+    ],
+}
