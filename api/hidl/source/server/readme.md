@@ -23,6 +23,7 @@ $hidl-gen -o $LOC -Landroidbp-impl -randroid.hardware:hardware/interfaces -randr
 
 然后执行脚本文件
 
+`-r`：相当于找到路径，`-randroid.hidl:system/libhidl/transport`,将package包名中的`android.hidl`翻译成`system/libhidl/transport`
 ```
 $source hardware/interfaces/update-makefiles.sh 
 ```
