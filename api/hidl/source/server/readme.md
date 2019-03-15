@@ -27,6 +27,9 @@ $hidl-gen -o $LOC -Landroidbp-impl -randroid.hardware:hardware/interfaces -randr
 $source hardware/interfaces/update-makefiles.sh 
 ```
 
+注意：`android.hidl:system/libhidl/transport`这个路径知道hidl的同目录，如light模块，需要`hardware/interfaces`.否则文件无法生成
+将update-makefiles.sh和hidl模块文件同级目录。如`vendor.melvin.hardware:vendor/melvin/hardware`
+
 会生成Android.bp和Android.mk文件
 
 # 2.添加service和rc文件
