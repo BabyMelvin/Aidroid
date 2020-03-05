@@ -21,12 +21,12 @@ public class MyServiceProxy implements IMyService{
     public void sayHello(String str) throws RemoteExcepions{
         android.os.Parcel _data=android.os.Parcel.obtain();
         android.os.Parcel _reply=android.os.Parcel.obtain();
-        try{
+        try {
             _data.writeInterfaceToken(DESCRIPTON);
             _data.writeString(str);
-            mRemote.transact(TRANSACTION_say,_data,_reply,0);
+            mRemote.transact(TRANSACTION_say, _data, _reply, 0);
             _reply.readException();
-        }finally{
+        } finally {
             _reply.recycle();
             _data.recycle();
         }

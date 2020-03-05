@@ -235,7 +235,7 @@ Handler把Message设置为自己，因为Handler除了封装消息添加功能�
 ### 2.2 Handler消息处理
 Looper消息队列中加入一个消息，Looper消息处理规则获取消息还会调用target的dispatchMessage函数。
 
-```
+```java
 public void dispatchMessage(Message msg){
 	//如果Message本身有callback,则直接交给Messge的callback处理
 	if(msg.callback!=null){
@@ -258,7 +258,7 @@ public void dispatchMessage(Message msg){
 
 ## Looper和Handler同步关系
 
-```
+```java
 //线程1
 class LooperThread extends Thread{
 	public Looper myLooper=null;//定义一个public
