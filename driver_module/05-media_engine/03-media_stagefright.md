@@ -150,7 +150,7 @@ const char*matchComponentName,uint32_t flags){
 		sp<MediaSource> softwareCodec=createEncoder?InstantiateSoftwareEncoder(componentName,source,meta):
 		InstatiateSoftwareCodec(componentName,source);
 		if(softwareCodec!=NULL){
-			LOGV("Successfully allocated software codec '%s'\n",componentName);
+			LOGV("Successfully allocated software codec '%s'gn",componentName);
 			return softwareCodec;
 		}
 		LOGV("Attemping to allocate OMX node %s",componentName);

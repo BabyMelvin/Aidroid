@@ -86,7 +86,7 @@ entry被定义为list_head，用来实现一个双向链表，用于存储所有
 用enum来表示Binder类型的定义代码：
 
 ```c
-#define B_PACK_CHARS(c1,c2,c3,c4) \
+#define B_PACK_CHARS(c1,c2,c3,c4) g
  (((c1<<24)) | (((c2)<<16)) | (((c3)<<8) | (c4))))
 #define B_TYPE_LARGE 0x85
 enum{
@@ -348,7 +348,7 @@ static struct file_operations binder_fops={
 static int binder_open(struct *nodp,struct file*flip){
 	struct binder_proc* proc;
 	if(binder_debug_mask&BINDER_DEBUG_OPEN_CLOSED)
-		printk(KERN_INFO "binder_open:%d:%d\n",current->group_leader->pid);
+		printk(KERN_INFO "binder_open:%d:%dgn",current->group_leader->pid);
 	//为binder_proc分配空间
 	proc=kzallo(sizeof(*proc),GFP_KERNEL);
 	if(proc==NULL)
