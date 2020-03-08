@@ -5,7 +5,7 @@ RefBase是Android native底层的对象。结合`sp`和`wp`实现一套引用计
 * sp化后，强弱引用计数各增加1，sp析构后，强弱引用各减1.
 * wp化后，弱引用计数增加1，wp析构后，弱引用计数减1.
 
-```
+```cpp
 class A:public RefBase{
     
 }
@@ -20,20 +20,20 @@ flag为0时，结论：
 
 StrongPointer.h中，有四种方式初始化sp对象。
 
-```
+```cpp
 //括号方式，调用目标对象incStrong方法
 sp(T* other); //1
 sp(const sp<T>& other);//2
 //等号方式，调用目标incStrong方法，再调用旧对象decStrong方法
-sp&operator=(T *other);//3
-sp&operator=(const sp<T> &other);//4
+sp& operator= (T *other);//3
+sp& operator= (const sp<T> &other);//4
 ```
 
 Android大量Binder通信，ProcessStat便是最常见sp对象，初始化sp实例：
 
-```
+```cpp
 sp<ProcessState> proc(ProcessState::self());//采用括号方式2
-sp<ProcessState> gProcess=new ProcessState;//等号方式4
+sp<ProcessState> gProcess = new ProcessState;//等号方式4
 ```
 
 **注意**:首次调用对象`incStrong()`，则会调用该对象`onFirstRef()`，调用`decStrong()`的最后一次，则会调用该对象`onLastStrongRef()`.
