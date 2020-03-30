@@ -228,6 +228,11 @@ VIDIOC_STREAMON 和 VIDIOC_STREAMOFF 两个 ioctl 用来开始和停止 capturin
 
 因此 drvier 如果要实现 memory mapping I/O 必须支持 VIDIOC_REQBUFS, VIDIOC_QUERYBUF, VIDIOC_QBUF, VIDIOC_DQBUF, VIDIOC_STREAMON 和 VIDIOC_STREAMOFF ioctl, the mmap(), munmap(), select() 和 poll() 函数 。
 
+* VIDIOC_REQBUFS：分配内存
+* VIDIOC_QUERYBUF：把VIDIOC_REQBUFS中分配的数据缓存转换成物理地址
+* VIDIOC_QBUF：把数据放回缓存队列
+* VIDIOC_DQBUF：把数据从缓存中读取出来
+
 User Pointers 是一种综合了 Read/Write 和 memory mappded 优势的 I/O 方法， buffer 是由应用程序自己申请的，可以是在虚拟内存或者共享内存中。在 capture 和 output 方面基本来说和 memory mapped 方式是相同的，在这里只提一下它申请内存的方式。
 
 User pointer 方式下，申请的内存也 memory page size 为单位对齐，而且 buffersize 也有一定限制，例示代码中是这样计算 buffer size 的，暂时还不知道这样分配 buffer size 的依据是什么，先简单地这样用就好了：

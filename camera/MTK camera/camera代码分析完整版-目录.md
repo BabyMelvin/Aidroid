@@ -1,3 +1,10 @@
+高通camera学习笔记概述（一二三四五） http://www.cnblogs.com/potato-coffee/p/4172009.html
+android camera 预览 app到hal  http://blog.csdn.net/tankai19880619/article/details/22795217
+电路图，时序图，移植，介绍参数 移植时用  http://www.cnblogs.com/thjfk/p/4086001.html
+简单的移植   http://blog.csdn.net/u013531497/article/details/18737111
+从上到下，特别全 代码注释很全   http://www.cnblogs.com/joseph-linux/p/3515151.html
+
+
 [深度好文](https://www.jianshu.com/p/5f538820e370)
 
 1.Camera总体架构

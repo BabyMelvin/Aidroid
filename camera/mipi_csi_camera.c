@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
         buf.memory = V4L2_MEMORY_MMAP;
         buf.m.planes = &planes;
         buf.length = 1; /* plane num */
-        if (ioctl(vd_fd, VIDIOC_QBUF, &buf) < 0) {
+        if (ioctl(vd_fd, VIDIOC_DQBUF, &buf) < 0) {
             printf("VIDIOC_DQUBUF failed");
             goto fail;
         }
