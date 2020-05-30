@@ -38,6 +38,7 @@ localsocket，也叫做Unix Domain Socket.在Android API中，有几个类对loc
 
 ## 1.java client
 使用Java的Client端如下（仅关键代码）：
+
 ```java
 LocalSocketAddress localSocketAddr = new LocalSocketAddress(sockFilePath, localSocketAddress.Namespace.FILESYSTEM);
 

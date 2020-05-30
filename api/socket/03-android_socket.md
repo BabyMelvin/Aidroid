@@ -13,6 +13,7 @@ s = new LocalSocekt();
 l = new LocalSocektAddress(SOCKET_NAME,LocalSocketAddress.Namespace.RESERVED);
 s.connect(l);
 ```
+
 到此时如果socket连接没有问题，就可以像正常的读写了。native层主要代码：
 
 ```cpp
@@ -26,7 +27,7 @@ s_fdCommand = accept(s_fdListen,(sockaddr *) &peeraddr, &socklen);
 这里有必要解释一下`SOCKET_NAME`，它的值是一个字符串，它在init.rc中定义的一个字符串。也就是说，**我们可以通过修改init.rc中来申请我们需要的socket资源**。
 这里以ril为例来说明：
 
-```
+```rc
 service ril-daemon /system/bin/rild
 	socket rild stream 660 root radio
 	socket rild-debug stream 660 radio system
@@ -40,7 +41,7 @@ socket表示为这个守护进程分配一个socket资源，这个socket资源�
 ## 1.2 自定义
 如果我们要自定义一个socket来进行通信，我们可以在init.rc的最后面加上。
 
-```
+```rc
 service myserver-daemon /system/bin/server
 	socket server stream 666
 	oneshot

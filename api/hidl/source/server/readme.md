@@ -12,9 +12,22 @@ android.hardware.melvin@1.0-service.rc
 
 ## 1.先写`.hal`文件
 
+`mkdir -p hardware/interfaces/melvin/1.0/default`
+
+文件内容:
+
+```
+package android.hardware.melvin@1.0;
+                           
+interface IMelvin {        
+    helloWorld(string name) generates (string result);
+};
+```
+
 然后执行：
 
 ```
+// 注意在根anrdroid目录执行
 $PACKAGE=android.hardware.melvin@1.0
 $LOC=hardware/interfaces/melvin/1.0/default
 $hidl-gen -o $LOC -Lc++-impl -randroid.hardware:hardware/interfaces -randroid.hidl:system/libhidl/transport $PACKAGE
@@ -62,4 +75,11 @@ $source hardware/interfaces/update-makefiles.sh
 
 ```
 hidl-gen -L hash -r android.hardware:hardware/interfaces -r android.hidl:system/libhidl/transport android.hardware.melvin@1.0 >> ./current.txt
+```
+
+
+
+```c
+// face问题
+using generateChallenge_cb = std::function<void(const ::android::hardware::biometrics::face::V1_0::OptionalUint64& result)>;
 ```

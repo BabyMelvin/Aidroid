@@ -508,7 +508,7 @@ SurfaceFlinger的管理对象如下：
 
 在文件LayBuffer.cpp中定义的类是一个Buffer类，并为其定义了构造代码如下:
 
-```c
+```cpp
 LayerBuffer::Buffer::Buffer(const ISurface::BufferHeap& buffers,ssize_t offset):mBufferHeap(buffers){
 	NativeBuffers&src(mNativeBuffer);
 	src.crop.l=0;
