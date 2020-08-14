@@ -435,8 +435,7 @@ void Set<type>Filed(JNIEnv*env,jobject obj,jfieldID fieldID,NativeType value);
 
 ```cpp
 jmethodID GetMethodID(JNIEnv *env,jclass clazz,const char*name,const char*sig);
-```
-
+``` 
 ### Call<type>Method,Call<type>MethodA和Call<type>MethodV
 
 ```cpp
