@@ -15,15 +15,15 @@
  *
  * =====================================================================================
  */
-#include <stdlib.h>
 #include "IMyService.h"
-int main(int argc,char*argv[]){
-    sp<IServiceManager> sm=defaultServiceManager();
-    sp<IBinder> binder=sm->getService(String16("service.myservice"));
+#include <stdlib.h>
+int main(int argc, char* argv[])
+{
+    sp<IServiceManager> sm = defaultServiceManager();
+    sp<IBinder> binder = sm->getService(String16("service.myservice"));
     //将binder对象转换为强引用类型IMyService
-    sp<IMyService> cs=interface_cast<IMyService>(binder);
+    sp<IMyService> cs = interface_cast<IMyService>(binder);
     //利用binder引用调用远程方法sayHello()
     cs->sayHello();
     return 0;
 }
-

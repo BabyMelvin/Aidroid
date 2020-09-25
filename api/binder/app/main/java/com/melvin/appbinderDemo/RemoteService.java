@@ -9,7 +9,7 @@ import android.util.Log;
 
 public class RemoteService extends Service{
     private static final String TAG ="BinderSimple";
-    MyData mMydata;
+    MyData mMyData;
 
     private final IRemoteService.Stub mBinder=new IRemoteService.Stub(){
         @Override

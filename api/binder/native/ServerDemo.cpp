@@ -15,16 +15,16 @@
  *
  * =====================================================================================
  */
-#include <stdlib.h>
 #include "IMyService.h"
+#include <stdlib.h>
 
-int main(int argc,char* argv){
+int main(int argc, char* argv)
+{
     //获取service manager引用
-    sp<IServiceManager> sm=defaultServiceManager();
+    sp<IServiceManager> sm = defaultServiceManager();
     //注册名为“service.myservice”服务
-    sm->addService(String16("service.myservice"),new BnMyService());
+    sm->addService(String16("service.myservice"), new BnMyService());
     ProcessState::self()->startThreadPool();
     IPCThreadState::self()->joinThreadPool();
     return 0;
 }
-

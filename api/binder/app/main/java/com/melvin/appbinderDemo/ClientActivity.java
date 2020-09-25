@@ -1,5 +1,4 @@
 //实现过程
-
 public void clickHandler(View view){
     switch (view.getId()){
         case R.id.btn_bind:
@@ -16,10 +15,12 @@ public void clickHandler(View view){
 
 
 private ServiceConnection mConnection=new ServiceConnection(){
+   
     @Override
-    public void onServiceConnected(ComponetName name,IBinder service){
-        mRemoteService=IRemoteService.Stub.asInterface(service);
+    public void onServiceConnected(ComponentName name, IBinder service){
+        mRemoteService = IRemoteService.Stub.asInterface(service);
         String pidInfo=null;
+
         try{
             MyData myData=mRemoteService.getMyData();
             pidInfo="pid="+mRemoteService.getPid()+
@@ -30,18 +31,18 @@ private ServiceConnection mConnection=new ServiceConnection(){
     }
 
     @Override
-    public void onServiceDisconnected(ComponetName name){
+    public void onServiceDisconnected(ComponentName name){
         mRemoteService=null;
     }
 }
 private void bindRemoteService(){
-    Intent intent=new Intent(ClinetActivity.this,RemoteService.class);
-    intent.setAction(IRemteService.class.getName());
-    bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
+    Intent intent=new Intent(ClientActivity.this, RemoteService.class);
+    intent.setAction(IRemoteService.class.getName());
+    bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 }
 
 private void unbindRemoteService(){
-    unbindService(mConnetion); 
+    unbindService(mConnection); 
 }
 
 private void killRemoteService(){

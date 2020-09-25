@@ -21,7 +21,7 @@ v4l2 支持一个设备文件可以被多次打开，却只允许其中一个应
 
 v4l2_capability 的各项参数可以查 API ，其中比较重要的是下面的成员变量：
 
-* _u32 capabilities:这个 32 位无符号整型定义了当前设备对一些关键属性的支持
+* `_u32 capabilities`:这个 32 位无符号整型定义了当前设备对一些关键属性的支持
 	* V4L2_CAP_VIDEO_CAPTURE 0x00000001:这个设备支持 video capture 的接口，即这个设备具备 video capture 的功能
 	* V4L2_CAP_VIDEO_OUTPUT 0x00000002:这个设备支持 video output 的接口，即这个设备具备 `video output` 的功能
 	* V4L2_CAP_VIDEO_OVERLAY 0x00000004: 这个设备支持 video overlay 的接口，即这个设备具备 video overlay 的功能，在这个功能下会将采集到的 imag 方在视频设备的 meomory 中保存，并直接在屏幕上显示，而**不需要经过其他的处理**。
@@ -271,12 +271,3 @@ int ioctl(int fd, int request, const int *argp);
 # 6. stop_capturing / uninit_device / close device
 
 最后就是捕捉以及资源释放并关闭 device 。
-
-
-
-
-
-
-
-
-

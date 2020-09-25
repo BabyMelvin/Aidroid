@@ -108,7 +108,7 @@ public static final void loop(){
 ```
 looper进入循环，不断重复下面操作，直到没有消息时推出循环：
 
-* 读取MeesageQueue的下一条Message(可能阻塞)
+* 读取MessageQueue的下一条Message(可能阻塞)
 * 把Message分发给相应的target；
 * 再把分发后的Message回收到消息池，以便重复利用。
 

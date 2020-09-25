@@ -109,6 +109,7 @@ static int load(const char *id,const char* path,const struct hw_module_t**pHmi){
 > Android系统启动时，内核引导参数上一般设置init=/init，**挂载** 了这个文件系统，首先运行根目录Init程序.
 
 新增驱动程序的设备节点，需要随之更改这些设备节点属性。
+
 ``` c++
 //定义.`/system/core/init/devices.c`
 struct perms_ {
@@ -119,15 +120,14 @@ struct perms_ {
     unsigned int gid;
     usnsigned short prefix;
 };
+
 //配置 /system/core/include/private/android_filesystem_config.h
 //文件系统一些配置
 #define AID_ROOT 0
 #define AID_SYSTEM 1000
 #define AID_SHELL  2000  //adb and debug shell user
-#define AID_CACHE  2001 //chache access
+#define AID_CACHE  2001  //cache access
 #define AID_APP    10000 // first app user
-
-
 ```
 
 

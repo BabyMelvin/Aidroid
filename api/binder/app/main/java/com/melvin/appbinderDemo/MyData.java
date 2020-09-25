@@ -9,7 +9,7 @@ public class MyData implements Parcelable{
     public MyData(){
     }
     protected MyData(Parcel in){
-        readFromeParcel(in);
+        readFromParcel(in);
     }
 
     public static final Creator<MyData> CREATOR=new Creator<MyData>(){

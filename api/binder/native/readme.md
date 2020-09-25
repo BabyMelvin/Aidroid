@@ -1,7 +1,7 @@
 ## Native
 
 相关类主要在`IInterface.h`中实现,其中IInterface类声明如下:
-```c++
+```cpp
 class IInterface:public virtual ReBase{
     public:
         IInterface();
@@ -13,7 +13,7 @@ class IInterface:public virtual ReBase{
 };
 ```
 `DECLARE_META_INTERFACE`宏在`IInterface.h` 中声明
-```c++
+```cpp
 #define DECLARE_META_INTERFACE(INTERFACE)   \
     static const android::String16 descriptor; \
     static android::sp<I##INTERFACE> asInterface(const android::sp<android::IBinder> &obj); \
@@ -22,8 +22,8 @@ class IInterface:public virtual ReBase{
     virtual ~I##INTERFACE(); 
 ```
 `IMPLEMENT_META_INTERFACE` 宏的实现
-```c++
-#define IMPLEMETN_META_INTERFACE(INTERFACE,NAME) \
+```cpp
+#define IMPLEMENT_META_INTERFACE(INTERFACE,NAME) \
     const android::String16 I##INTERFACE::descriptor(NAME); \
     const android::String16&  I##INTERFACE::getInterfaceDescriptor() const{ \
         return I##INTERFACE::descriptor; \
@@ -40,7 +40,7 @@ class IInterface:public virtual ReBase{
     I##INTERFACE::~I##INTERFACE(){}
 ```
 `BnInterface` 声明
-```c++
+```cpp
 template<typename INTERFACE>
 class BnInterface:public INTERFACE,public BBinder{
     public:
@@ -51,7 +51,7 @@ class BnInterface:public INTERFACE,public BBinder{
 };
 ```
 `BpInterface`声明
-``` c++
+``` cpp
 template<typename INTERFACE>
 class BpInterface:public INTERFACE,public BpRefBase{
     public:

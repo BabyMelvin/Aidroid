@@ -14,7 +14,7 @@ public class MyService extends Binder implements IMyService{
         return this;
     }
 
-    //将MyService转换为IMySerivce接口
+    // 将MyService转换为IMyService接口
     public static com.melvin.frameworkBinder.IMySerivce asInterface(android.os.IBinder obg){
         if(obj==null){
             return null;
@@ -42,6 +42,7 @@ public class MyService extends Binder implements IMyService{
         }
         return super.onTransact(code,data,reply,flags);
     }
+    
     // 自定义sayHello()方法
     @Override
     public void sayHello(String str){

@@ -7,6 +7,7 @@ LOCAL_SHARED_LIBRARIES:=\
 	libcutils \
 	libutils \
 	libbinder
+
 LOCAL_MODULE:=ServiceDemo
 LOCAL_SRC_FILES:= \
 	IMyService.cpp \
@@ -20,6 +21,7 @@ LOCAL_SHARED_LIBRARIES:= \
 	libcutils \
 	libutils \
 	libbinder
+LOCAL_MODULE:=ServiceDemo
 LOCAL_SRC_FILES:= \
 	IMyService.cpp \
 	ClientDemo.cpp

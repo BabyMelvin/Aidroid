@@ -10,7 +10,7 @@ public class ServerDemo{
         Looper.prepareMainLooper();
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_FOREGROUND);
         //注册服务
-        ServiceManager.addService("MySerivce",new MyService());
+        ServiceManager.addService("MyService",new MyService());
         Looper.loop();
     }
 }

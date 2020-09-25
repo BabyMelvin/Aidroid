@@ -14,15 +14,17 @@ public class MyServiceProxy implements IMyService{
     public IBinder asBinder(){
         return mRemote;
     }
+
     public java.lang.String getInterfaceDescriptor(){
         return DESCRIPTOR;
     }
+    
     @Override
-    public void sayHello(String str) throws RemoteExcepions{
+    public void sayHello(String str) throws RemoteExceptions{
         android.os.Parcel _data=android.os.Parcel.obtain();
         android.os.Parcel _reply=android.os.Parcel.obtain();
         try {
-            _data.writeInterfaceToken(DESCRIPTON);
+            _data.writeInterfaceToken(DESCRIPTOR);
             _data.writeString(str);
             mRemote.transact(TRANSACTION_say, _data, _reply, 0);
             _reply.readException();
