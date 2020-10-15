@@ -1,7 +1,7 @@
 # JNI调用
 
-* C ：(*env)->NewStringUTF(env, "Hello from JNI");
-* C++: env->NewStringUTF("Hello from JNI");
+* C ：`(*env)->NewStringUTF(env, "Hello from JNI")`;
+* C++: `env->NewStringUTF("Hello from JNI")`;
 
 # 1. 数据类型
 
@@ -9,54 +9,54 @@
 
 透明的无需转换
 
-|java type|native type|description|
-|--|--|--|
-|boolean|jboolean|unsigned 8bits|
-|byte|jbyte|signed 8bits|
-|char|jchar|unsigned 16bits|
-|short|jshort|signed 16bits|
-|int|jint|signed 32bits|
-|long|jlong|signed 64 bits|
-|float|jfloat|32 bits|
-|double|jdouble|64 bits|
-|void|void|N/A|
+| java type | native type | description     |
+| --------- | ----------- | --------------- |
+| boolean   | jboolean    | unsigned 8bits  |
+| byte      | jbyte       | signed 8bits    |
+| char      | jchar       | unsigned 16bits |
+| short     | jshort      | signed 16bits   |
+| int       | jint        | signed 32bits   |
+| long      | jlong       | signed 64 bits  |
+| float     | jfloat      | 32 bits         |
+| double    | jdouble     | 64 bits         |
+| void      | void        | N/A             |
 
 ## 1.2 引用数据类型
 
 
-|java type|native type|
-|--|--|--|
-|java.lang.Class|jclass|
-|java.lang.Throwable|jthrowable|
-|java.lang.String|jstring|
-|Other objects|jobjects|
-|java.lang.Object[]|jobjecArray|
-|boolean[]|jbooleanArray|
-|byte[]|jbyteArray|
-|char[]|jcharArray|
-|short[]|jshortArray|
-|int[]|jintArray|
-|long[]|jlongArray|
-|float[]|jfloatArray|
-|double[]|jdoubleArray|
-|Other arrays| jarray|
+| java type           | native type   |
+| ------------------- | ------------- |
+| java.lang.Class     | jclass        |
+| java.lang.Throwable | jthrowable    |
+| java.lang.String    | jstring       |
+| Other objects       | jobject       |
+| java.lang.Object[]  | jobjecArray   |
+| boolean[]           | jbooleanArray |
+| byte[]              | jbyteArray    |
+| char[]              | jcharArray    |
+| short[]             | jshortArray   |
+| int[]               | jintArray     |
+| long[]              | jlongArray    |
+| float[]             | jfloatArray   |
+| double[]            | jdoubleArray  |
+| Other arrays        | jarray        |
 
 
 签名:
 
-|java类型|签名|
-|--|--|
-|Boolean|Z|
-|Byte|B|
-|Char|C|
-|Short|S|
-|Int|I|
-|Long|J|
-|Float|F|
-|Double|D|
-|fully-quality-class|Lfully-quality-class;|
-|type[]|[type|
-|methodtype|(arg-type)ret-type|
+| java类型            | 签名                  |
+| ------------------- | --------------------- |
+| Boolean             | Z                     |
+| Byte                | B                     |
+| Char                | C                     |
+| Short               | S                     |
+| Int                 | I                     |
+| Long                | J                     |
+| Float               | F                     |
+| Double              | D                     |
+| fully-quality-class | Lfully-quality-class; |
+| type[]              | [type                 |
+| methodtype          | (arg-type)ret-type    |
 
 # 2 对引用数据类型的操作
 
@@ -84,8 +84,8 @@ jstring javaString = env->NewStringUTF("Hello world!");
 
 java字符串转换为C字符串，有两种：
 
-* Unicode:GetStringChars
-* UTF-8:GetStringUTFChars
+* Unicode:`GetStringChars`
+* UTF-8:`GetStringUTFChars`
 
 ```java
 const jbyte *str;
@@ -104,7 +104,7 @@ if (0 != str) {
 ### 2.1.3 释放字符串
 原声代码用完需要释放，否则会内存泄露
 
-env->ReleaseStringUTFChars(javaString, str);
+`env->ReleaseStringUTFChars(javaString, str);`
 
 ## 2.2 数组操作
 
@@ -212,7 +212,7 @@ JNI 提供了访问**两类域**的函数
 
 * 用对象引用获得类
 
-```java
+```cpp
 jclass clazz;
 clazz = env->GetObjectClass(instance);
 ```

@@ -35,6 +35,7 @@ private ServiceConnection mConnection=new ServiceConnection(){
         mRemoteService=null;
     }
 }
+
 private void bindRemoteService(){
     Intent intent=new Intent(ClientActivity.this, RemoteService.class);
     intent.setAction(IRemoteService.class.getName());

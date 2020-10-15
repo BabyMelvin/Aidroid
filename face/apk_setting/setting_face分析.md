@@ -2,7 +2,7 @@ android 10将Face和Fingerprint归为Biometric类。
 
 主Activity为：
 
-> E:\melvin\Settings\src\com\android\settings\biometrics\BiometricEnrollActivity.java
+> E:\Settings\src\com\android\settings\biometrics\BiometricEnrollActivity.java
 
 ```java
 @Override
@@ -259,7 +259,7 @@ public interface Listener {
 }
 ```
 
-**注意**：这里抽象类BiometricsEnrollEnrolling并没有去实现接口，那么则由子类去实现了
+> **注意**：这里抽象类BiometricsEnrollEnrolling并没有去实现接口，那么则由子类去实现了
 
 查看，发现FaceEnrollEnrolling确实实现了内容：
 
@@ -336,14 +336,14 @@ circleView使用了FaceEnrollAnimationDrawable自定义Drawable
 ```java
 public class FaceEnrollAnimationDrawable extends Drawable
         implements BiometricEnrollSidecar.Listener {
-	private static final int BORDER_BOUDS = 20;
+	private static final int BORDER_BOUNDS = 20;
 	
 	private final Context mContext;
 	private final ParticleCollection.Listener mListener;
 	private Rect mBounds;
 	private final Paint mSquarePaint;
-	private final Paint mCirlcleCutoutPaint;
-	private PartilceCollection mParticleCollection;
+	private final Paint mCircleCutoutPaint;
+	private ParticleCollection mParticleCollection;
 	private TimeAnimator mTimeAnimator;
 	
 	private final ParticleCollection.Listener mAnimationListener
@@ -357,13 +357,13 @@ public class FaceEnrollAnimationDrawable extends Drawable
         }
     };
 
-	public FaceEnrollAnimationDrawable(Context context, ParticleCollectionl.Listener listener) {
+	public FaceEnrollAnimationDrawable(Context context, ParticleCollection.Listener listener) {
 		mContext = context;
 		mListener = listener;
 	
 		mSquarePaint = new Paint();
 		mSquarePaint.setColor(Color.WHITE);
-		mSquarePaint.setAntiAlisa(ture);
+		mSquarePaint.setAntiAlisa(true);
 	
 		mCircleCutoutPaint = new Paint();
 		mCircleCutoutPaint.setColor(Color.TRANSPARENT);
@@ -372,7 +372,7 @@ public class FaceEnrollAnimationDrawable extends Drawable
 	}
 
 	@Override
-	protected void onBoudsChange(Rect bounds) {
+	protected void onBoundsChange(Rect bounds) {
 		mBounds = bounds;
         mParticleCollection =
                 new ParticleCollection(mContext, mAnimationListener, bounds, BORDER_BOUNDS);
@@ -388,7 +388,7 @@ public class FaceEnrollAnimationDrawable extends Drawable
 	
 	@Override
 	public void draw(Canvas canvas) {
-		if (mBouds == null) {
+		if (mBounds == null) {
 			return;
 		}
 		
@@ -438,7 +438,7 @@ private void openCamera(int width, int height) {
 
 		// 打开摄像头
         mCameraManager.openCamera(mCameraId, mCameraStateCallback, mHandler);
-		// 设置好textureview的宽高
+		// 设置好texture view的宽高
         configureTransform(width, height);
     } catch (CameraAccessException e) {
         Log.e(TAG, "Unable to open camera", e);
@@ -510,11 +510,11 @@ public void onOpened(CameraDevice cameraDevice) {
 可以看到apk层,camera操作流程:
 
 * 1.设置camera参数
-	* 遍历获得cameraid,`String cameraId : mCameraManager.getCameraIdList()`
+	* 遍历获得camera id,`String cameraId = mCameraManager.getCameraIdList()`
 	* `CameraCharacteristics characteristics = mCameraManager.getCameraCharacteristics(cameraId);`
 	* 找到前置摄像头:`Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);`
 	* 获得流的配置：`StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);`,找到最合适，找不到就用`map[0]`
-* 2.mCameraManager.openCamera打开摄像头,打开时候回调进行处理onOpened
+* 2.mCameraManager.openCamera打开摄像头, 打开时候回调进行处理onOpened
 	* `mCameraDevice = cameraDevice;`
 	* 通过texture来获得Surface
 	* CaptureRequest.Builder
